@@ -1,0 +1,20 @@
+[package]
+name = "seq_chunking"
+version = "0.1.0"
+authors = ["Yohann Duhamel <yohann.duhamel@protonmail.com>"]
+edition = "2024"
+description = "SeqCDC (content defined chunking) in pure Rust."
+repository = "https://github.com/puntakana/seqcdc-rs"
+readme = "README.md"
+keywords = ["cdc", "chunking"]
+license = "MIT"
+
+[dependencies]
+
+[dev-dependencies]
+criterion = "0.6"
+tempfile = "3.20.0"
+
+[[bench]]
+name = "chunking_benchmark"
+harness = false
