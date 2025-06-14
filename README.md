@@ -1,9 +1,9 @@
 # SeqChunking
 
 [![Crates.io](https://img.shields.io/crates/v/seq-chunking.svg)](https://crates.io/crates/seq-chunking)
-[![Documentation](https://docs.rs/seq-chunking/badge.svg)](https://docs.rs/seq-chunking)
+[![docs.rs](https://docs.rs/seq-chunking/badge.svg)](https://docs.rs/seq-chunking)
 [![License](https://img.shields.io/crates/l/seq-chunking.svg)](https://github.com/puntakana/seqcdc-rs#license)
-[![Test](https://github.com/puntakana/seqcdc-rs/workflows/Test/badge.svg)]
+![Test](https://github.com/puntakana/seqcdc-rs/workflows/Test/badge.svg)
 
 A Rust library for sequence-based data chunking using slope detection algorithms.
 
