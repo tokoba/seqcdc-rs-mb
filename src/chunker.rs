@@ -1,7 +1,7 @@
 //! Core chunking implementation.
 
 use crate::config::{ChunkingConfig, SeqOpMode};
-use crate::error::{Result};
+use crate::error::Result;
 
 /// Represents a single chunk of data
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -57,7 +57,9 @@ impl<'a> Iterator for ChunkIterator<'a> {
         }
 
         let remaining = &self.data[self.position..];
-        let cutpoint = self.chunker.find_cutpoint(remaining, remaining.len() as u64);
+        let cutpoint = self
+            .chunker
+            .find_cutpoint(remaining, remaining.len() as u64);
         let chunk_size = (cutpoint as usize).min(remaining.len());
 
         if chunk_size == 0 {
@@ -66,7 +68,7 @@ impl<'a> Iterator for ChunkIterator<'a> {
 
         let chunk_data = &remaining[..chunk_size];
         let chunk = Chunk::new(chunk_data, self.position, chunk_size);
-        
+
         self.position += chunk_size;
         Some(chunk)
     }
@@ -147,12 +149,12 @@ impl SeqChunking {
             if curr_seq_length >= self.config.seq_threshold {
                 return curr_pos as u64;
             }
-            
+
             if opposing_slope_count >= self.config.jump_trigger {
                 curr_pos += self.config.jump_size as usize;
                 opposing_slope_count = 0;
                 curr_seq_length = 0;
-                
+
                 if curr_pos >= size_usize || curr_pos >= buff.len() {
                     break;
                 }
@@ -192,12 +194,12 @@ impl SeqChunking {
             if curr_seq_length >= self.config.seq_threshold {
                 return curr_pos as u64;
             }
-            
+
             if opposing_slope_count >= self.config.jump_trigger {
                 curr_pos += self.config.jump_size as usize;
                 opposing_slope_count = 0;
                 curr_seq_length = 0;
-                
+
                 if curr_pos >= size_usize || curr_pos >= buff.len() {
                     break;
                 }
@@ -297,8 +299,9 @@ impl ChunkingStats {
                 let diff = size as f64 - avg;
                 diff * diff
             })
-            .sum::<f64>() / chunk_count as f64;
-        
+            .sum::<f64>()
+            / chunk_count as f64;
+
         let stddev = variance.sqrt();
 
         Self {
@@ -326,10 +329,7 @@ mod tests {
 
     #[test]
     fn test_seq_chunking_from_config() {
-        let config = ChunkingConfig::builder()
-            .seq_threshold(10)
-            .build()
-            .unwrap();
+        let config = ChunkingConfig::builder().seq_threshold(10).build().unwrap();
         let chunker = SeqChunking::from_config(config);
         assert_eq!(chunker.config().seq_threshold, 10);
     }
@@ -346,11 +346,11 @@ mod tests {
     fn test_find_cutpoint_increasing() {
         let chunker = SeqChunking::new();
         let mut data = vec![0u8; 8192];
-        
+
         for i in 4096..4110 {
             data[i] = (i - 4096) as u8;
         }
-        
+
         let result = chunker.find_cutpoint(&data, 8192);
         assert!(result < 8192);
         assert!(result > 4096);
@@ -360,18 +360,18 @@ mod tests {
     fn test_chunk_iterator() {
         let chunker = SeqChunking::new();
         let data = b"Hello, World! This is a test.";
-        
+
         let chunks: Vec<_> = chunker.chunk_all(data).collect();
-        
+
         assert!(!chunks.is_empty());
-        
+
         // Verify reconstruction
         let reconstructed: Vec<u8> = chunks
             .iter()
             .flat_map(|chunk| chunk.data.iter())
             .copied()
             .collect();
-        
+
         assert_eq!(reconstructed, data);
     }
 
@@ -379,7 +379,7 @@ mod tests {
     fn test_chunking_stats() {
         let chunker = SeqChunking::new();
         let data = vec![42u8; 10000];
-        
+
         let stats = chunker.stats(&data);
         assert_eq!(stats.total_size, 10000);
         assert!(stats.chunk_count > 0);
@@ -393,12 +393,12 @@ mod tests {
             .build()
             .unwrap();
         let chunker = SeqChunking::from_config(config);
-        
+
         let mut data = vec![255u8; 8192];
         for i in 4096..4110 {
             data[i] = (255 - (i - 4096)) as u8;
         }
-        
+
         let result = chunker.find_cutpoint(&data, 8192);
         assert!(result < 8192);
         assert!(result > 4096);
@@ -408,7 +408,7 @@ mod tests {
     fn test_chunk_properties() {
         let data = b"test data";
         let chunk = Chunk::new(data, 0, data.len());
-        
+
         assert_eq!(chunk.start, 0);
         assert_eq!(chunk.len, data.len());
         assert_eq!(chunk.end(), data.len());
